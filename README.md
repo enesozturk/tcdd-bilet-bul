@@ -1,6 +1,9 @@
-TCDD Gayri Resmi API
+# TCDD Gayriresmî API
+=====================
 
-Bu kodun Türkiye Cumhuriyeti Devlet Demiryolları ile hiç bir ilişkisi yoktur. Tamamen gayri resmi ve bağımsız bir API'dir. 
+Bu kodun Türkiye Cumhuriyeti Devlet Demiryolları ile hiç bir ilişkisi yoktur. Gayriresmî bir API'dir ve bağımsız geliştirilmektedir.
+
+Durak ve Sefer bilgilerini aramak için metodlar içerir.
 
 Kullanımı izne tabi olabilir. 
 
