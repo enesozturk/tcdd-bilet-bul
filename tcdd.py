@@ -1,6 +1,26 @@
 import requests
 import json
-from datetime import datetime
+from datetime import date
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
+import time
+
+class PushSafer():
+    def sendNotification(self, baslik, mesaj):
+        url = 'https://www.pushsafer.com/api' # Set destination URL here
+        post_fields = {                       # Set POST fields here
+            "t" : baslik,  #see push safer parameters on website https://www.pushsafer.com
+            "m" : mesaj,
+            "s" : 20,
+            "pr": 2,
+            "v" : 3,
+            "i" : 9,
+            "d" : deviceKey,
+            "k" : "privateKey"
+            }
+
+        request = Request(url, urlencode(post_fields).encode())
+        json = urlopen(request).read().decode()
 
 class TCDDResponse():
     def __init__(self, response):
@@ -15,7 +35,6 @@ class TCDDResponse():
 
     def content(self):
         return self.content
-
 
 class TCDDBaseClient():
     base_url = 'https://eybistrm.tcdd.gov.tr/WebServisWeb/rest/EybisRestApplication/'
@@ -103,3 +122,31 @@ class TCDDClient(TCDDBaseClient):
             "seferId": seferId
         }
         return self.seferDetaySorgulaRequest(data)
+
+tcdd = TCDDClient()
+pushSafer = PushSafer()
+isSend = False
+
+tarih = date(2019, 1, 1).strftime("%b %d, %Y %I:%M:%S %p")
+mesajIcinTarih = date(2019, 1, 1).strftime("%d/%m")
+
+while(1):
+    if isSend == False:
+        cevap = tcdd.seferSorgula(
+            binisIstasyonu='Kalkis İstasyonu',
+            inisIstasyonu='Varis Istasyonu',
+            gidisTarih=tarih
+        )
+
+        if cevap.is_successful():
+            data = cevap.data()
+            cevapMesaj = data['cevapBilgileri']['cevapMsj']
+            if "başarılı" in cevapMesaj:
+                    #send notification to yourself
+                    pushSafer.sendNotification('Biletler Açıldı', 'Biletler seni bekliyor --> ' + mesajIcınTarih)
+                    isSend = True
+                    print("Sefer BULUNDU!")
+            else:
+                print("Sefer bulunamadı")
+
+    time.sleep(5)
