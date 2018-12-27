@@ -4,6 +4,7 @@ from datetime import date
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 import time
+import logging
 
 class PushSafer():
     def sendNotification(self, baslik, mesaj):
@@ -127,8 +128,11 @@ tcdd = TCDDClient()
 pushSafer = PushSafer()
 isSend = False
 
-tarih = date(2019, 1, 1).strftime("%b %d, %Y %I:%M:%S %p")
-mesajIcinTarih = date(2019, 1, 1).strftime("%d/%m")
+logging.basicConfig(filename='logs.log', level=logging.DEBUG,
+                    format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s', datefmt="%Y-%m-%d %H:%M:%S")
+
+tarih = date(2019, 1, 1)
+mesajIcinTarih = tarih.strftime("%d/%m")
 
 while(1):
     if isSend == False:
@@ -143,10 +147,13 @@ while(1):
             cevapMesaj = data['cevapBilgileri']['cevapMsj']
             if "başarılı" in cevapMesaj:
                     #send notification to yourself
-                    pushSafer.sendNotification('Biletler Açıldı', 'Biletler seni bekliyor --> ' + mesajIcınTarih)
+                    pushSafer.sendNotification('Biletler Açıldı', 'Biletler seni bekliyor --> ' + mesajIcinTarih)
                     isSend = True
-                    print("Sefer BULUNDU!")
+                    logging.info(mesajIcinTarih + 'için sefer bulundu')
+                    print('Sefer BULUNDU')
+                    break
             else:
-                print("Sefer bulunamadı")
+                logging.info(mesajIcinTarih + ' için sefer bulunamadı')
+                print('Sefer bulunamadı')
 
     time.sleep(5)

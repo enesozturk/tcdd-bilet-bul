@@ -1,0 +1,9 @@
+certifi==2018.11.29
+chardet==3.0.4
+DateTime==4.3
+idna==2.8
+pkg-resources==0.0.0
+pytz==2018.7
+requests==2.21.0
+urllib3==1.24.1
+zope.interface==4.6.0
