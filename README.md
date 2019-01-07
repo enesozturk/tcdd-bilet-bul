@@ -1,28 +1,50 @@
-# TCDD Gayriresmî API
-=====================
+# TCDD Bilet Kontrolü
 
-Bu kodun Türkiye Cumhuriyeti Devlet Demiryolları ile hiç bir ilişkisi yoktur. Gayriresmî bir API'dir ve bağımsız geliştirilmektedir.
+Bu proje TCDD'nin seferlerini devamlı olarak sorgulayıp, bulunduğu anda telefonunuza bildirim göndermek için yazılmıştır. 
 
-Durak ve Sefer bilgilerini aramak için metodlar içerir.
+    Doğu Ekspresi için bilet almak istediğimde farkettim ki seferler farklı saatlerde açılıyor. Açıldığı zaman da hemen doluyor. Bu konuda yardımcı olması amacı ile yazılmış bir uygulama. 
 
-Kullanımı izne tabi olabilir. 
+Sefer sorgulama için kullanılan API hakkında bilgiyi [buradan](https://github.com/aliahmet/tcdd) mutlaka okuyunuz.
 
-Kullanımından doğacak her sonuç kullanan kişiye ait.
 
-Örnek Sefer Sorgulama:
+## Kullanımı
+
+- Proje içinde [virtualenv](https://virtualenv.pypa.io/en/latest/) oluşturun.
+  - `virtualenv -p python3 env`
+- Virtual Environment'i aktifleştirin
+  - `source env/bin/activate`
+- Gerekli paketleri indirin
+  - `pip install -r requirements/dev.txt`
+- Kod kısmında gerekli kısımları değiştirip projeyi başlatın
+  - `python tcdd.py`
+
+Örnek sorgu:
 ```python
-from tcdd import TCDDClient
-import datetime
-
-tcdd = TCDDClient()
-yarin = datetime.date.today() + datetime.timedelta(days=1)
+...
+tarih = date(2019, 1, 1)
+...
 cevap = tcdd.seferSorgula(
-    binisIstasyonu='İstanbul (Pendik)', 
-    inisIstasyonu='Ankara Gar', 
-    gidisTarih=yarin
+    binisIstasyonu='Ankara Gar', 
+    inisIstasyonu='Kars', 
+    gidisTarih=tarih
     )
+...
+```
 
-if cevap.is_successful():
-    data = cevap.data()
-    ...
+Telefonunuza bildirim gönderilmesini istiyorsanız. Şu adımları takip edin. 
+
+- https://www.pushsafer.com sitesine üye olun
+- Mobil uygulaması olan PushSafer'i telefonunuza indirip giriş yapın (Android/IOS)
+- Web site üzerinden `private key` ve `device key` bilgilerini kopyalayıp projede `PushSafer` class'ı içinde gerekli yerlere yapıştırın
+
+Mobil bildirim devre dışı bırakmak isterseniz *sendNotification* metodunu yorum satırı yapın
+
+```python
+if "başarılı" in cevapMesaj:
+    # send notification to yourself
+    # pushSafer.sendNotification('Doğu Ekpresi', 'Doğu Ekpresi bileti seni bekliy--> ' + mesajIcinTarih)
+    isSend = True
+    logging.info(mesajIcinTarih + 'için sefer bulundu')
+    print("Sefer BULUNDU!")
+    break
 ```
